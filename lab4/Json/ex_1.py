@@ -1,6 +1,6 @@
 import json
 
-with open(r"sample_data.json", "r") as file:
+with open(r"C:\Users\esirk\Desktop\study\PP_2\vscode\lab1\lab4\json\sample_data.json", "r") as file:
     data = json.load(file)
 
 print("Interface Status")
