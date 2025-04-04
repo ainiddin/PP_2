@@ -1,241 +1,225 @@
-import pygame 
- 
- 
-WIDTH, HEIGHT = 1200, 800  #Defines the width and height of the game window.
-FPS = 90 #screen refresh rate
-draw = False   #indicating whether to draw on the screen           
-radius = 2    #Brush radius
-color = 'blue'           
-mode = 'pen'                
- 
-pygame.init() 
-screen = pygame.display.set_mode([WIDTH, HEIGHT]) #Creating a window of specified sizes
-pygame.display.set_caption('Paint') #name window 
-clock = pygame.time.Clock() #for time management
-screen.fill(pygame.Color('white'))  #Fills the screen with white.
-font = pygame.font.SysFont('None', 60) #Creating a font to display text
- 
- 
-def drawLine(screen, start, end, width, color): 
-    # Extract x and y coordinates of start and end points
-    x1 = start[0] 
-    x2 = end[0] 
-    y1 = start[1] 
-    y2 = end[1] 
-    
-    # Calculate absolute differences in x and y coordinates
-    dx = abs(x1 - x2) 
-    dy = abs(y1 - y2) 
-    
-    # Coefficients for the line equation Ax + By + C = 0
-    A = y2 - y1  # Vertically
-    B = x1 - x2  # Horizontally
-    C = x2 * y1 - x1 * y2 
-    
-    # If the line is more horizontal than vertical
-    if dx > dy: 
-        # Ensure x1 is to the left of x2
-        if x1 > x2: 
-            x1, x2 = x2, x1 
-            y1, y2 = y2, y1 
-        # Iterate over x coordinates
-        for x in range(x1, x2): 
-            # Calculate y coordinate using the line equation
-            y = (-C - A * x) / B 
-            # Draw a circle (pixel) at (x, y) position
-            pygame.draw.circle(screen, pygame.Color(color), (x, y), width) 
-    # If the line is more vertical than horizontal
-    else: 
-        # Ensure y1 is below y2
-        if y1 > y2: 
-            x1, x2 = x2, x1 
-            y1, y2 = y2, y1 
-        # Iterate over y coordinates
-        for y in range(y1, y2): 
-            # Calculate x coordinate using the line equation
-            x = (-C - B * y) / A 
-            # Draw a circle (pixel) at (x, y) position
-            pygame.draw.circle(screen, pygame.Color(color), (x, y), width)
+import pygame
+import sys
+import math
+pygame.init()
+width, height = 800, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption('Simple paint')
 
- 
- 
-def drawCircle(screen, start, end, width, color): 
-    # Extract x and y coordinates of start and end points
-    x1 = start[0]  # Extract x-coordinate of the start point
-    x2 = end[0]  # Extract x-coordinate of the end point
-    y1 = start[1]  # Extract y-coordinate of the start point
-    y2 = end[1]  # Extract y-coordinate of the end point
-    
-    # Calculate the center of the circle
-    x = (x1 + x2) / 2  # Calculate the center of the circle along the x-axis
-    y = (y1 + y2) / 2  # Calculate the center of the circle along the y-axis
-    
-    # Calculate the radius of the circle
-    radius = abs(x1 - x2) / 2  # Calculate the radius of the circle
-    
-    # Draw the circle on the screen
-    pygame.draw.circle(screen, pygame.Color(color), (x, y), radius, width)  # Draw the circle on the screen
+# цвета
+white = (255, 255, 255)
+black = (0, 0, 0)
+green = (0, 255, 0)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+gray = (200, 200, 200)
 
- 
- 
-def drawRectangle(screen, start, end, width, color): 
-    # Extract x and y coordinates of start and end points
-    x1 = start[0]  # Extract x-coordinate of the start point
-    x2 = end[0]  # Extract x-coordinate of the end point
-    y1 = start[1]  # Extract y-coordinate of the start point
-    y2 = end[1]  # Extract y-coordinate of the end point
-    
-    # Calculate the width and height of the rectangle
-    widthr = abs(x1 - x2)  # Calculate the width of the rectangle
-    height = abs(y1 - y2)  # Calculate the height of the rectangle
-    
-    # Draw the rectangle on the screen based on the position of start and end points
-    if x2 > x1 and y2 > y1: 
-        pygame.draw.rect(screen, pygame.Color(color), (x1, y1, widthr, height), width)  # Draw the rectangle on the screen
-    if y2 > y1 and x1 > x2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x2, y1, widthr, height), width)  # Draw the rectangle on the screen
-    if x1 > x2 and y1 > y2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x2, y2, widthr, height), width)  # Draw the rectangle on the screen
-    if x2 > x1 and y1 > y2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x1, y2, widthr, height), width)  # Draw the rectangle on the screen
 
-     
- 
- 
-def drawSquare(screen, start, end, color): 
-    x1 = start[0] 
-    x2 = end[0] 
-    y1 = start[1] 
-    y2 = end[1] 
-    mn = min(abs(x2 - x1), abs(y2 - y1)) 
- 
- 
-    if x2 > x1 and y2 > y1: 
-        pygame.draw.rect(screen, pygame.Color(color), (x1, y1, mn, mn)) 
-    if y2 > y1 and x1 > x2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x2, y1, mn, mn)) 
-    if x1 > x2 and y1 > y2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x2, y2, mn, mn)) 
-    if x2 > x1 and y1 > y2: 
-        pygame.draw.rect(screen, pygame.Color(color), (x1, y2, mn, mn)) 
- 
-def drawRightTriangle(screen, start, end, color): 
-    x1 = start[0] 
-    x2 = end[0] 
-    y1 = start[1] 
-    y2 = end[1] 
-     
-    if x2 > x1 and y2 > y1: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y1), (x2, y2), (x1, y2))) 
-    if y2 > y1 and x1 > x2: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y1), (x2, y2), (x1, y2))) 
-    if x1 > x2 and y1 > y2: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y1), (x2, y2), (x2, y1))) 
-    if x2 > x1 and y1 > y2: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y1), (x2, y2), (x2, y1))) 
- 
- 
-def drawEquilateralTriangle(screen, start, end, width, color): 
-    x1 = start[0] 
-    x2 = end[0] 
-    y1 = start[1] 
-    y2 = end[1] 
- 
-    width_b = abs(x2 - x1) 
-    height = (3**0.5) * width_b / 2 
- 
-    if y2 > y1: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y2), (x2, y2), ((x1 + x2) / 2, y2 - height)), width) 
-    else: 
-        pygame.draw.polygon(screen, pygame.Color(color), ((x1, y1), (x2, y1), ((x1 + x2) / 2, y1 - height))) 
-     
- 
-def drawRhombus(screen, start, end, width, color): 
-    x1 = start[0] 
-    x2 = end[0] 
-    y1 = start[1] 
-    y2 = end[1] 
-    pygame.draw.lines(screen, pygame.Color(color), True, (((x1 + x2) / 2, y1), (x1, (y1 + y2) / 2), ((x1 + x2) / 2, y2), (x2, (y1 + y2) / 2)), width) 
- 
-while True: 
+class Button:
+    def __init__(self, x, y, width, height, text, color, action):
+        # нужно для создания прямоугольной кнпоки
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text  # текст
+        self.color = color  # цвет
+        self.action = action  # функция работает при нажатий
+
+    def draw(self, screen):
+        # функция которая рисует рект с определенным цветам на экране
+        pygame.draw.rect(screen, self.color, self.rect)
+        font = pygame.font.Font(None, 24)  # текст без шрифта размером 24
+        # рендерит текст на кнопке
+        text_surface = font.render(self.text, True, white)
+        # отображает текст
+        screen.blit(text_surface, (self.rect.x + 12, self.rect.y + 12))
+
+    def check_action(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:  # если нажата кнопка мыши
+            # Проверяет находится ли позиция курсора внутри прямоугольника
+            if self.rect.collidepoint(event.pos):
+                self.action()  # если да то вызывает функция кнопки
+
+
+drawing = False
+brush_color = black
+mode = "brush"
+start_pos = None
+
+# Функций обработчик
+
+
+def set_black():
+    global brush_color, mode
+    brush_color = black
+    mode = "brush"
+
+
+def set_green():
+    global brush_color, mode
+    brush_color = green
+    mode = "brush"
+
+
+def set_red():
+    global brush_color, mode
+    brush_color = red
+    mode = "brush"
+
+
+def set_blue():
+    global brush_color, mode
+    brush_color = blue
+    mode = "brush"
+
+
+def clear_screen():
+    screen.fill(white)
+
+
+def exit_app():
+    pygame.quit()
+    sys.exit()
+
+
+def set_eraser():
+    global brush_color, mode
+    brush_color = white
+    mode = "brush"
+
+
+def set_brush():
+    global mode
+    mode = "brush"
+
+
+def set_rectangle():
+    global mode
+    mode = "rect"
+
+
+def set_circle():
+    global mode
+    mode = "circle"
+
+
+def set_square():
+    global mode
+    mode = "square"
+
+
+def set_right_triangle():
+    global mode
+    mode = "right_triangle"
+
+
+def set_equilateral_triangle():
+    global mode
+    mode = "equilateral_triangle"
+
+
+def set_rhombus():
+    global mode
+    mode = "rhombus"
+
+
+# Создаем Лист элементы которого объекты (кнопка с ее функцией)
+buttons = [
+    Button(10, 10, 60, 30, 'Black', black, set_black),
+    Button(80, 10, 60, 30, 'Green', green, set_green),
+    Button(150, 10, 60, 30, 'Red', red, set_red),
+    Button(220, 10, 60, 30, 'Blue', blue, set_blue),
+    Button(290, 10, 60, 30, 'Clear', gray, clear_screen),
+    Button(360, 10, 60, 30, 'Eraser', gray, set_eraser),
+    Button(430, 10, 60, 30, 'Brush', gray, set_brush),
+    Button(500, 10, 60, 30, 'Rect', gray, set_rectangle),
+    Button(570, 10, 60, 30, 'Circle', gray, set_circle),
+    Button(640, 10, 60, 30, 'Exit', black, exit_app),
+    Button(710, 10, 80, 30, 'Square', gray, set_square),
+    Button(10, 50, 80, 30, 'Right ⊿', gray, set_right_triangle),
+    Button(100, 50, 80, 30, 'Equi ⊿', gray, set_equilateral_triangle),
+    Button(190, 50, 80, 30, 'Rhombus', gray, set_rhombus),
+
+]
+
+clear_screen()
+while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: 
-            exit()  # Exit the program if the window is closed
-         
-        # Handling keyboard events
-        if event.type == pygame.KEYDOWN: 
-            # Change the mode based on the pressed key
-            if event.key == pygame.K_r: 
-                mode = 'rectangle'  # Set the mode to draw rectangles
-            if event.key == pygame.K_c: 
-                mode = 'circle'  # Set the mode to draw circles
-            if event.key == pygame.K_p: 
-                mode = 'pen'  # Set the mode to use a pen
-            if event.key == pygame.K_e: 
-                mode = 'erase'  # Set the mode to erase
-            if event.key == pygame.K_s: 
-                mode = 'square'  # Set the mode to draw squares
-            if event.key == pygame.K_q: 
-                screen.fill(pygame.Color('white'))  # Clear the screen by filling it with white color
- 
-            # Change the color based on the pressed key
-            if event.key == pygame.K_1: 
-                color = 'black'  # Set the color to black
-            if event.key == pygame.K_2: 
-                color = 'green'  # Set the color to green
-            if event.key == pygame.K_3: 
-                color = 'red'  # Set the color to red
-            if event.key == pygame.K_4: 
-                color = 'blue'  # Set the color to blue
-            if event.key == pygame.K_5: 
-                color = 'yellow'  # Set the color to yellow
-            if event.key == pygame.K_t: 
-                mode = 'right_tri'  # Set the mode to draw right triangles
-            if event.key == pygame.K_u: 
-                mode = 'eq_tri'  # Set the mode to draw equilateral triangles
-            if event.key == pygame.K_h: 
-                mode = 'rhombus'  # Set the mode to draw rhombuses
-   
- 
-      
-        if event.type == pygame.MOUSEBUTTONDOWN:  
-            draw = True  # Enable drawing
-            if mode == 'pen': 
-                pygame.draw.circle(screen, pygame.Color(color), event.pos, radius)  # Draw a circle (pixel) if the pen mode is active
-            prevPos = event.pos  # Store the current position as the previous position
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:  # если зажата кнопка мыши
+            if event.button == 1:  # если зажата именно левая
+                drawing = True  # мы рисуем
+                start_pos = event.pos
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                drawing = False
+                if mode == "rect" and start_pos:  # формула для рисовки на экране именно прямоугольника
+                    x = min(start_pos[0], event.pos[0])
+                    y = min(start_pos[1], event.pos[1])
+                    width = abs(event.pos[0] - start_pos[0])
+                    height = abs(event.pos[1] - start_pos[1])
 
- 
-        
-        if event.type == pygame.MOUSEBUTTONUP:  
-        # When the mouse button is released
-            if mode == 'rectangle': 
-                drawRectangle(screen, prevPos, event.pos, radius, color)  # Draw a rectangle if the mode is set to draw rectangles
-            elif mode == 'circle': 
-                drawCircle(screen, prevPos, event.pos, radius, color)  # Draw a circle if the mode is set to draw circles
-            elif mode == 'square': 
-                drawSquare(screen, prevPos, event.pos, color)  # Draw a square if the mode is set to draw squares
-            elif mode == 'right_tri': 
-                drawRightTriangle(screen, prevPos, event.pos, color)  # Draw a right triangle if the mode is set to draw right triangles
-            elif mode == 'eq_tri': 
-                drawEquilateralTriangle(screen, prevPos, event.pos, radius, color)  # Draw an equilateral triangle if the mode is set to draw equilateral triangles
-            elif mode == 'rhombus': 
-                drawRhombus(screen, prevPos, event.pos, radius, color)  # Draw a rhombus if the mode is set to draw rhombuses
-            draw = False  # Disable drawing
+                    pygame.draw.rect(screen, brush_color,
+                                     (x, y, width, height), 2)
 
- 
-       
-        if event.type == pygame.MOUSEMOTION:  
-        # When the mouse is moved
-            if draw and mode == 'pen': 
-                drawLine(screen, lastPos, event.pos, radius, color)  # If drawing is enabled and pen mode is active, draw a line between the last position and the current position
-            elif draw and mode == 'erase': 
-                drawLine(screen, lastPos, event.pos, radius, 'white')  # If drawing is enabled and erase mode is active, draw a white line (erase) between the last position and the current position
-            lastPos = event.pos  # Update the last position to the current position
- 
-    # Draw a rectangle to display the radius information
-    pygame.draw.rect(screen, pygame.Color('white'), (5, 5, 115, 75))  # Draw a white rectangle to display the radius information
-    renderRadius = font.render(str(radius), True, pygame.Color(color))  # Render the text showing the current radius
-    screen.blit(renderRadius, (5, 5))  # Blit the rendered text onto the screen at the specified position
- 
-    pygame.display.flip()  # Update the display
-    clock.tick(FPS)  # Control the frame rate
+                elif mode == "circle" and start_pos:  # формула для рисовки на экране именно круга
+                    radius = max(
+                        abs(event.pos[0] - start_pos[0]), abs(event.pos[1] - start_pos[1]))
+                    pygame.draw.circle(screen, brush_color,
+                                       start_pos, radius, 2)
+
+                elif mode == "square" and start_pos:  # формула для рисовки на экране именно квадрата
+                    x = min(start_pos[0], event.pos[0])
+                    y = min(start_pos[1], event.pos[1])
+                    side = max(abs(event.pos[0] - start_pos[0]),
+                               abs(event.pos[1] - start_pos[1]))
+                    pygame.draw.rect(screen, brush_color,
+                                     (x, y, side, side), 2)
+
+                elif mode == "right_triangle" and start_pos:  # формула для рисовки на экране именно прямоугольника
+                    x1, y1 = start_pos
+                    x2, y2 = event.pos
+                    points = [(x1, y1), (x1, y2), (x2, y2)]
+                    pygame.draw.polygon(screen, brush_color, points, 2)
+
+                # формула для рисовки на экране именно равностороннего трехугольника
+                elif mode == "equilateral_triangle" and start_pos:
+                    x1, y1 = start_pos
+                    x2, y2 = event.pos
+                    base = abs(x2 - x1)
+                    height = int((3**0.5 / 2) * base)
+                    mid_x = (x1 + x2) // 2
+                    if y2 > y1:
+                        top = (mid_x, y1)
+                        left = (x1, y1 + height)
+                        right = (x2, y1 + height)
+                    else:
+                        top = (mid_x, y1)
+                        left = (x1, y1 - height)
+                        right = (x2, y1 - height)
+                    pygame.draw.polygon(screen, brush_color, [
+                                        top, left, right], 2)  # polygon универсальный: позволяет рисовать любые многоугольники, задавая их вершины.
+
+                elif mode == "rhombus" and start_pos:
+                    x1, y1 = start_pos
+                    x2, y2 = event.pos
+                    mid_x = (x1 + x2) // 2
+                    mid_y = (y1 + y2) // 2
+                    points = [(mid_x, y1), (x2, mid_y),
+                              (mid_x, y2), (x1, mid_y)]
+                    pygame.draw.polygon(screen, brush_color, points, 2)
+
+        for button in buttons:
+            button.check_action(event)
+    if drawing and mode == "brush":
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if mouse_y > 50:
+            pygame.draw.circle(screen, brush_color, (mouse_x, mouse_y), 5)
+
+    # рисует рект на левом верхнем углу
+    pygame.draw.rect(screen, gray, (0, 0, width, 50))
+    for button in buttons:
+        # берем каждый элемент из buttons (кнопки) и рисуем их на экране
+        button.draw(screen)
+
+    pygame.display.flip()
