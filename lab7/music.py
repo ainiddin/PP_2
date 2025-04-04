@@ -10,12 +10,11 @@ allmusic = os.listdir(music_folder)
 for song in allmusic:
     if song.endswith(".mp3"):
         playlist.append(os.path.join(music_folder, song))
-
 screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("песня-1")
 clock = pygame.time.Clock()
 
-background = pygame.image.load(os.path.join("lab7", "music-elements", "background.png"))
+background = pygame.image.load(os.path.join( "music-elements", "background.png"))
 background = pygame.transform.scale(background, (800, 800))
 
 bg = pygame.Surface((500, 200))
@@ -23,10 +22,11 @@ bg.fill((255, 255, 255))
 
 font2 = pygame.font.SysFont(None, 30)
 
-playb = pygame.image.load(os.path.join("lab7", "music-elements", "play.png"))
-pausb = pygame.image.load(os.path.join("lab7", "music-elements", "pause.png"))
-nextb = pygame.image.load(os.path.join("lab7", "music-elements", "next.png"))
-prevb = pygame.image.load(os.path.join("lab7", "music-elements", "back.png"))
+playb = pygame.image.load(os.path.join("music-elements", "play.png"))
+pausb = pygame.image.load(os.path.join("music-elements", "pause.png"))
+nextb = pygame.image.load(os.path.join("music-elements", "next.png"))
+prevb = pygame.image.load(os.path.join("music-elements", "back.png"))
+
 
 index = 0
 aplay = False
