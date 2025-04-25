@@ -30,7 +30,7 @@ class Button:
         # рендерит текст на кнопке
         text_surface = font.render(self.text, True, white)
         # отображает текст
-        screen.blit(text_surface, (self.rect.x + 12, self.rect.y + 12))
+        screen.blit(text_surface, (self.rect.x + 12, self.rect.y + 8))
 
     def check_action(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:  # если нажата кнопка мыши
@@ -73,6 +73,7 @@ def set_blue():
 
 def clear_screen():
     screen.fill(white)
+    pygame.draw.rect(screen, gray, (0, 0, 800, 50))
 
 
 def exit_app():
@@ -83,11 +84,6 @@ def exit_app():
 def set_eraser():
     global brush_color, mode
     brush_color = white
-    mode = "brush"
-
-
-def set_brush():
-    global mode
     mode = "brush"
 
 
@@ -129,17 +125,14 @@ buttons = [
     Button(220, 10, 60, 30, 'Blue', blue, set_blue),
     Button(290, 10, 60, 30, 'Clear', gray, clear_screen),
     Button(360, 10, 60, 30, 'Eraser', gray, set_eraser),
-    Button(430, 10, 60, 30, 'Brush', gray, set_brush),
-    Button(500, 10, 60, 30, 'Rect', gray, set_rectangle),
-    Button(570, 10, 60, 30, 'Circle', gray, set_circle),
-    Button(640, 10, 60, 30, 'Exit', black, exit_app),
+    Button(430, 10, 80, 30, 'Rhombus', gray, set_rhombus),
+    Button(530, 10, 60, 30, 'Rect', gray, set_rectangle),
+    Button(580, 10, 60, 30, 'Circle', gray, set_circle),
+    Button(650, 10, 60, 30, 'Exit', black, exit_app),
     Button(710, 10, 80, 30, 'Square', gray, set_square),
     Button(10, 50, 80, 30, 'Right ⊿', gray, set_right_triangle),
     Button(100, 50, 80, 30, 'Equi ⊿', gray, set_equilateral_triangle),
-    Button(190, 50, 80, 30, 'Rhombus', gray, set_rhombus),
-
 ]
-
 clear_screen()
 while True:
     for event in pygame.event.get():
@@ -159,30 +152,25 @@ while True:
                     width = abs(event.pos[0] - start_pos[0])
                     height = abs(event.pos[1] - start_pos[1])
 
-                    pygame.draw.rect(screen, brush_color,
-                                     (x, y, width, height), 2)
+                    pygame.draw.rect(screen, brush_color,(x, y, width, height), 4)
 
                 elif mode == "circle" and start_pos:  # формула для рисовки на экране именно круга
-                    radius = max(
-                        abs(event.pos[0] - start_pos[0]), abs(event.pos[1] - start_pos[1]))
-                    pygame.draw.circle(screen, brush_color,
-                                       start_pos, radius, 2)
+                    radius = max(abs(event.pos[0] - start_pos[0]), abs(event.pos[1] - start_pos[1]))
+                    pygame.draw.circle(screen, brush_color,start_pos, radius, 4)
 
                 elif mode == "square" and start_pos:  # формула для рисовки на экране именно квадрата
                     x = min(start_pos[0], event.pos[0])
                     y = min(start_pos[1], event.pos[1])
-                    side = max(abs(event.pos[0] - start_pos[0]),
-                               abs(event.pos[1] - start_pos[1]))
-                    pygame.draw.rect(screen, brush_color,
-                                     (x, y, side, side), 2)
+                    side = max(abs(event.pos[0] - start_pos[0]),abs(event.pos[1] - start_pos[1]))
+                    pygame.draw.rect(screen, brush_color,(x, y, side, side), 4)
 
-                elif mode == "right_triangle" and start_pos:  # формула для рисовки на экране именно прямоугольника
+                elif mode == "right_triangle" and start_pos:  # формула для рисовки на экране именно прямоугольного треугольника
                     x1, y1 = start_pos
                     x2, y2 = event.pos
                     points = [(x1, y1), (x1, y2), (x2, y2)]
-                    pygame.draw.polygon(screen, brush_color, points, 2)
+                    pygame.draw.polygon(screen, brush_color, points, 4)
 
-                # формула для рисовки на экране именно равностороннего трехугольника
+                # формула для рисовки на экране именно равностороннего треугольника
                 elif mode == "equilateral_triangle" and start_pos:
                     x1, y1 = start_pos
                     x2, y2 = event.pos
@@ -197,23 +185,21 @@ while True:
                         top = (mid_x, y1)
                         left = (x1, y1 - height)
                         right = (x2, y1 - height)
-                    pygame.draw.polygon(screen, brush_color, [
-                                        top, left, right], 2)  # polygon универсальный: позволяет рисовать любые многоугольники, задавая их вершины.
+                    pygame.draw.polygon(screen, brush_color, [top, left, right], 4)  # polygon универсальный: позволяет рисовать любые многоугольники, задавая их вершины.
 
                 elif mode == "rhombus" and start_pos:
                     x1, y1 = start_pos
                     x2, y2 = event.pos
                     mid_x = (x1 + x2) // 2
                     mid_y = (y1 + y2) // 2
-                    points = [(mid_x, y1), (x2, mid_y),
-                              (mid_x, y2), (x1, mid_y)]
-                    pygame.draw.polygon(screen, brush_color, points, 2)
+                    points = [(mid_x, y1), (x2, mid_y),(mid_x, y2), (x1, mid_y)]
+                    pygame.draw.polygon(screen, brush_color, points, 4)
 
         for button in buttons:
             button.check_action(event)
     if drawing and mode == "brush":
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        if mouse_y > 50:
+        if mouse_y > 84:
             pygame.draw.circle(screen, brush_color, (mouse_x, mouse_y), 5)
 
     # рисует рект на левом верхнем углу
@@ -221,5 +207,4 @@ while True:
     for button in buttons:
         # берем каждый элемент из buttons (кнопки) и рисуем их на экране
         button.draw(screen)
-
     pygame.display.flip()

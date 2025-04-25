@@ -3,13 +3,13 @@ import random as r
 
 pygame.init()
 
-screen=pygame.display.set_mode((500,500)) #даем размер экрана
+screen=pygame.display.set_mode((600,600)) #даем размер экрана
 cell_size=20 #даем размер одной ячейке
 pygame.display.set_caption("Жылан ойын") #даем название игре
 bg_clr=pygame.Color("white")
 snake_color=pygame.Color("green")
 
-snake_pos=[100,100] #стартовая позиция змейки
+snake_pos=[100,200] #стартовая позиция змейки
 snake_body=[[160,200],[140,200],[120,200]] #делим змейку на 3 части,каждый субмассив имеет кординаты каждогой части тела змейки
 direction="RIGHT"
 change_to=direction
@@ -49,11 +49,11 @@ while running:
         #когда кординаты змейки равный краям окна переводим змейку к противоположенному краю  
     if snake_pos[0] < 0:
         snake_pos[0] = 500
-    elif snake_pos[0] > 500:
+    elif snake_pos[0] >= 500:
         snake_pos[0] = 0
     elif snake_pos[1] < 0:
         snake_pos[1] = 500
-    elif snake_pos[1] > 500:
+    elif snake_pos[1] >= 500:
         snake_pos[1] = 0
         
     snake_body.insert(0,list(snake_pos))#добавляем голову змейке
@@ -63,7 +63,11 @@ while running:
             snake_body.insert(0, list(snake_pos))
     else:
         snake_body.pop()  # Убираем хвост
-    
+        for body in snake_body[1:]:
+            if body == snake_body[0]:
+                running=False
+                pygame.quit()
+                exit()
     # Генерация новой пищи
     if not food_spawn or pygame.time.get_ticks() - food_time>=5000:#возвращает количество миллисекунд, прошедших с начала работы игры и минусуем появления время еды
         food_pos = [r.randint(1, 24) * cell_size, r.randint(1, 24) * cell_size]
@@ -85,7 +89,7 @@ while running:
     screen.blit(weight_text, (food_pos[0] + 5, food_pos[1] + 1))#вставляем надпись веса над едой 
 
     pygame.display.flip()#обновляем экран выводим все работы с памяти как рисунки
-    clock.tick(20)#даем fps
+    clock.tick(9)#даем fps
 
 pygame.quit()
 exit()

@@ -35,7 +35,7 @@ RED = (255, 0, 0)
 GOLD = (255, 215, 0)
 
 # Шрифты
-font_large = pygame.font.SysFont("Verdana", 60)
+font_large = pygame.font.SysFont("Verdana", 45)
 font_small = pygame.font.SysFont("Verdana", 20)
 game_over = font_large.render("YOU CRASHED!", True, BLACK)
 
@@ -56,7 +56,7 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load(os.path.join("lab8-9", "images", "Enemy.png")), (50, 80))
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40, screen_width - 40), random.randint(-100, 0))
+        self.rect.center = (random.randint(25, screen_width - 40), random.randint(-100, 0))
 
     def move(self):
         global score
@@ -64,7 +64,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.rect.top > screen_height:
             score += 1
             self.rect.top = random.randint(-100, 0)
-            self.rect.center = (random.randint(40, screen_width - 40), self.rect.top)
+            self.rect.center = (random.randint(25, screen_width - 40), self.rect.top)
 
 # Класс игрока
 class Player(pygame.sprite.Sprite):
@@ -72,7 +72,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load(os.path.join("lab8-9", "images", "car.png")), (50, 80))
         self.rect = self.image.get_rect()
-        self.rect.center = (160, 520)
+        self.rect.center = (200, 520)
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -90,7 +90,7 @@ class Coin(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, GOLD, (self.radius, self.radius), self.radius)
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(40, screen_width - 40), 0)
-        self.points = 1 if self.radius <= 10 else 2  # малые монеты = 1 очко, большие = 2 очка
+        self.points = 1 if self.radius <= 15 else 2  # малые монеты = 1 очко, большие = 2 очка
 
     def move(self):
         self.rect.move_ip(0, coin_fall_speed)
@@ -116,17 +116,18 @@ all_sprites = pygame.sprite.Group()
 all_sprites.add(player_car, enemy_car, *coins_group)
 
 # Событие для увеличения скорости врагов со временем
-INC_SPEED = pygame.USEREVENT + 1
-pygame.time.set_timer(INC_SPEED, 1000)
+inc_speed=pygame.time.get_ticks()
 
 # Главный игровой цикл
 while True:
     for event in pygame.event.get():
-        if event.type == INC_SPEED:
-            enemy_speed += 0.5
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+    #увеличение скорости врага каждые 1000 милисекунды
+    if pygame.time.get_ticks()-inc_speed>=1000:
+            enemy_speed += 0.5
+            inc_speed=pygame.time.get_ticks()
 
     # Отображение фона
     screen.blit(background, (0, 0))

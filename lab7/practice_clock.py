@@ -5,7 +5,7 @@ screen=pygame.display.set_mode((800,600))
 pygame.display.set_caption("Mickey clock")
 
 bodyclock=pygame.transform.scale(pygame.image.load(r"C:\Users\esirk\Desktop\study\PP_2\vscode\lab1\lab7\images\clock.png"),(800,600))
-secarm=pygame.transform.scale(pygame.image.load(r"C:\Users\esirk\Desktop\study\PP_2\vscode\lab1\lab7\images\leftarm.png"),(40, 682.5))
+secarm=pygame.transform.scale(pygame.image.load(r"C:\Users\esirk\Desktop\study\PP_2\vscode\lab1\lab7\images\leftarm.png"),(40.95, 682.5))
 minarm=pygame.transform.scale(pygame.image.load(r"C:\Users\esirk\Desktop\study\PP_2\vscode\lab1\lab7\images\rightarm.png"),(800,600))
 
 clock = pygame.time.Clock()
